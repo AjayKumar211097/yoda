@@ -36,7 +36,7 @@ const GoalCard = () => {
                     }}
                 >
                     <Grid container>
-                        <Grid item xs={8} sm={8} md={8}>
+                        <Grid size={{ xs: 8, sm: 8, md: 8 }}>
                             <Typography variant="body1" color="text.primary">
                                 {goal.sublabel}
                             </Typography>
@@ -52,7 +52,7 @@ const GoalCard = () => {
                                 Complete
                             </Button>
                         </Grid>
-                        <Grid item key={index} xs={4} sm={4} md={4}>
+                        <Grid key={index} size={{ xs: 4, sm: 4, md: 4 }}>
                             <img src={finance} alt="" height={150}></img>
                         </Grid>
                     </Grid>
