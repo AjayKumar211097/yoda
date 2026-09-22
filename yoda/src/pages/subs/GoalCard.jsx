@@ -6,7 +6,7 @@ const GoalCard = () => {
     const { currentUserGoals } = useContext(PeopleContext);
 
     if (!Array.isArray(currentUserGoals) || currentUserGoals.length === 0) {
-        return <p>No goals found.</p>;
+        return <p>Choose profile</p>;
     }
     const colors = [
         "#9c89b8",
