@@ -1,70 +1,51 @@
-# Getting Started with Create React App
+# Yoda — web app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The React frontend for [Yoda](../README.md), a private household habit and goal tracker. Bootstrapped with Create React App and installable as a PWA.
 
-## Available Scripts
+## Getting started
 
-In the project directory, you can run:
+```bash
+npm install
+npm start
+```
 
-### `npm start`
+Opens on http://localhost:3000.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The app calls the **deployed** API at `https://yoda-backend.vercel.app`. That base URL is declared at the top of each module in `src/api/`, so pointing the app at a locally running backend means editing those files. (`src/.env` exists but is empty and is not read by anything.)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Scripts
 
-### `npm test`
+| Script | What it does |
+| --- | --- |
+| `npm start` | Dev server with hot reload on :3000 |
+| `npm run build` | Production build into `build/` |
+| `npm test` | Jest + React Testing Library, watch mode |
+| `npm run precache` | Regenerates `build/service-worker.js` via Workbox — run **after** `npm run build` |
+| `npm run eject` | One-way CRA eject. Don't. |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Run a single test:
 
-### `npm run build`
+```bash
+npx react-scripts test --watchAll=false -t "renders the header"
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## How it hangs together
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+State lives in one React context; there is no router and no data-fetching library.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `src/context/PeopleContext.jsx` — holds `currentUser` and `currentUserGoals`, and nothing else.
+- `src/pages/Header.jsx` → `src/pages/subs/UserSelection.jsx` — renders an avatar per person. Picking one is the only action in the app that writes to the context: it sets the current user *and* fetches that person's goals.
+- `src/pages/subs/GoalCard.jsx` — reads `currentUserGoals` and renders the coloured cards.
+- `src/api/` — one file per endpoint, plain `fetch`, each returning parsed JSON.
+- `src/index.js` — registers the service worker that makes this a PWA.
 
-### `npm run eject`
+`src/components/GoalCard.jsx` and `src/pages/Home.jsx` are empty leftovers; the component actually rendered is the one under `pages/subs/`.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Dependency notes
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Two versions are deliberately held back and should not be bumped casually:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **ESLint stays on 8.x.** `react-scripts` lints at build time using the `eslintConfig` key in `package.json`, which is eslintrc format. ESLint 9 removed support for it and the build fails.
+- **`eslint-plugin-react-hooks` stays on 4.x**, because `eslint-config-airbnb@19` requires it as a `^4.3.0` peer.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Remaining `npm audit` findings are all inside `react-scripts`' own dependency tree and cannot be resolved while the project stays on Create React App, which is no longer maintained upstream. `npm audit fix --force` will break the build.
