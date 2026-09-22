@@ -7,7 +7,7 @@ beforeEach(() => {
   global.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve([]) }));
 });
 
-test('renders the header and the empty goals state', async () => {
+test('renders the header and the choose-profile prompt', async () => {
   render(
     <PeopleContextProvider>
       <App />
@@ -15,5 +15,5 @@ test('renders the header and the empty goals state', async () => {
   );
 
   expect(await screen.findByRole('heading', { name: /hello/i })).toBeInTheDocument();
-  expect(screen.getByText(/no goals found/i)).toBeInTheDocument();
+  expect(screen.getByText(/choose profile/i)).toBeInTheDocument();
 });
